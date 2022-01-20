@@ -1,16 +1,39 @@
+import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Background } from '../components/Background';
 import { WhiteLogo } from '../components/WhiteLogo';
+import { useForm } from '../hooks/useForm';
 import { loginStyles } from '../theme/loginTheme';
 
-export const LoginScreen = () => {
+interface Props extends StackScreenProps<any,any>{
+
+}
+
+//Las props exrtienden para poder la navegacion
+export const LoginScreen = ({navigation}:Props) => {
+  const {email,password,onChange}=useForm({
+    email:'',
+    password:''
+  });
+
+  const onLogin=()=>{
+    console.log({email,password})
+    //Para ocultar el teclado al hacer clic en login
+    Keyboard.dismiss();
+  }
+
   return <>
     {/* Background */}
     <Background />
 
-    {/* Keyboard avoid view */}
+    <KeyboardAvoidingView
+      style={{flex:1}}
+      behavior={(Platform.OS=='ios'?'padding':'height')}
+    >
+
+    {/* Keyboard avoid view  evita que el teclado esconda los fields*/}
     <View style={loginStyles.formContainer}>
       <WhiteLogo />
 
@@ -24,6 +47,12 @@ export const LoginScreen = () => {
         style={loginStyles.inputField}
         selectionColor='white'
         //TODO: change
+
+        onChangeText={(value)=>onChange(value,'email')}
+        value={email}
+        onSubmitEditing={onLogin}
+
+
         autoCapitalize='none'
         autoCorrect={false}
       />
@@ -31,11 +60,17 @@ export const LoginScreen = () => {
       <TextInput
         placeholder='******'
         placeholderTextColor="rgba(255,255,255,0.4)"
-
+        
         underlineColorAndroid='white'
         style={loginStyles.inputField}
         selectionColor='white'
+        secureTextEntry={true}
+        
         //TODO: change
+        onChangeText={(value)=>onChange(value,'password')}
+        value={password}
+        onSubmitEditing={onLogin}
+
         autoCapitalize='none'
         autoCorrect={false}
       />
@@ -44,6 +79,7 @@ export const LoginScreen = () => {
       <View style={loginStyles.buttonContainer}>
         <TouchableOpacity
           style={loginStyles.button}
+          onPress={onLogin}
         >
           <Text style={loginStyles.buttonText}>Login</Text>
         </TouchableOpacity>
@@ -52,12 +88,13 @@ export const LoginScreen = () => {
       {/* Crear una nueva cuenta */}
       <View style={loginStyles.newUserContainer}>
         <TouchableOpacity activeOpacity={0.8}
-          onPress={() => console.log('press')}
+          onPress={()=>navigation.replace('RegisterScreen')}
         >
 
           <Text style={loginStyles.buttonText}>Nueva cuenta</Text>
         </TouchableOpacity>
       </View>
     </View>
+    </KeyboardAvoidingView>
   </>;
 };
