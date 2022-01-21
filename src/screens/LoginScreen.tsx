@@ -1,6 +1,6 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useContext } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, Text, TouchableOpacity, View } from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { Background } from '../components/Background';
 import { WhiteLogo } from '../components/WhiteLogo';
@@ -15,12 +15,24 @@ interface Props extends StackScreenProps<any,any>{
 //Las props exrtienden para poder la navegacion
 export const LoginScreen = ({navigation}:Props) => {
 
-  const {sigIn}=useContext(AuthContext);  
+  const {sigIn, errorMessage,removeError}=useContext(AuthContext);  
 
   const {email,password,onChange}=useForm({
     email:'',
     password:''
   });
+
+  useEffect(() => {
+    if(errorMessage.length===0) return;
+  
+    Alert.alert('Login incorrecto',errorMessage,[
+      {
+        text:'Ok',
+        onPress:()=>removeError()
+      },
+    ]);
+  }, [errorMessage]);
+  
 
   const onLogin=()=>{
     //console.log({email,password})
