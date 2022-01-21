@@ -9,7 +9,7 @@ type AuthContextProps = {
     user: Usuario | null;
     status: 'checking' | 'authenticated' | 'not-authenticated';
     sigUp: () => void;
-    sigIn: (loginData:LoginData) => void;
+    sigIn: (loginData: LoginData) => void;
     logOut: () => void;
     removeError: () => void;
 }
@@ -27,12 +27,19 @@ export const AuthProvider = ({ children }: any) => {
     const [state, dispatch] = useReducer(authReducer, authInicialState);
 
     const sigUp = () => { };
-    const sigIn = async({correo,password}:LoginData) => { 
+    const sigIn = async ({ correo, password }: LoginData) => {
         try {
-            const resp = await cafeApi.post<LoginResponse>('/auth/login',{correo, password});
-            console.log(resp.data);
-        } catch (error:any) {   
-            console.log(error.response.data);
+            const resp = await cafeApi.post<LoginResponse>('/auth/login', { correo, password });
+            //console.log(resp.data);
+            dispatch({
+                type: 'signUp',
+                payload: {
+                    token: resp.data.token,
+                    user: resp.data.usuario
+                }
+            })
+        } catch (error: any) {
+            console.log(error.response.data.msg);
         }
     };
     const logOut = () => { };
