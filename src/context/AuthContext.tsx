@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 import cafeApi from "../api/cafeApi";
-import { LoginData, LoginResponse, Usuario } from "./appInterfaces";
+import { LoginData, LoginResponse, Usuario } from "../interfaces/appInterfaces";
 import { authReducer, AuthState } from "./AuthReducer";
 
 type AuthContextProps = {
