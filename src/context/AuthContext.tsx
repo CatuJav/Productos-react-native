@@ -1,4 +1,7 @@
-import React, { createContext, useReducer } from "react";
+import React, { createContext, useEffect, useReducer } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 import cafeApi from "../api/cafeApi";
 import { LoginData, LoginResponse, Usuario } from "./appInterfaces";
 import { authReducer, AuthState } from "./AuthReducer";
@@ -26,6 +29,27 @@ export const AuthProvider = ({ children }: any) => {
 
     const [state, dispatch] = useReducer(authReducer, authInicialState);
 
+    //Leer el AsyncStorage, pero los efectos no pueden ser asincoronos 
+    useEffect(() => {
+
+
+    }, []);
+
+    //Helper
+    const checkToken = async() => {
+       const token= await AsyncStorage.getItem('token2', (error, token) => {
+            //Este error se lanza si esque no se puede leer el dato por varias razones
+            console.log({ error, msg: 'Instale la aplicación otra vez' });
+
+            return token;
+        });
+
+        //Si no hay token se dispara el no autenticado
+        if(!token) return dispatch({type:'notAuthenticated'})
+
+        //TODO:Si hay token verificar token. Usando la petición GET Renovar o Validar JWT
+    }
+
     const sigUp = () => { };
     const sigIn = async ({ correo, password }: LoginData) => {
         try {
@@ -38,6 +62,9 @@ export const AuthProvider = ({ children }: any) => {
                     user: resp.data.usuario
                 }
             })
+
+            //Guardar el token
+            await AsyncStorage.setItem('token', resp.data.token);
         } catch (error: any) {
             console.log(error.response.data.msg);
             dispatch({
@@ -47,9 +74,9 @@ export const AuthProvider = ({ children }: any) => {
         }
     };
     const logOut = () => { };
-    const removeError = () => { 
+    const removeError = () => {
 
-        dispatch({type:'removeError'})
+        dispatch({ type: 'removeError' })
     };
 
     return (
