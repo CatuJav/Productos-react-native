@@ -32,14 +32,16 @@ export const AuthProvider = ({ children }: any) => {
     //Leer el AsyncStorage, pero los efectos no pueden ser asincoronos 
     useEffect(() => {
 
-
+        checkToken();
     }, []);
 
     //Helper
     const checkToken = async() => {
-       const token= await AsyncStorage.getItem('token2', (error, token) => {
+       const token= await AsyncStorage.getItem('token', (error, token) => {
             //Este error se lanza si esque no se puede leer el dato por varias razones
-            console.log({ error, msg: 'Instale la aplicación otra vez' });
+           if(error){
+               console.log({ error, msg: 'Instale la aplicación otra vez' });
+           }
 
             return token;
         });
@@ -47,7 +49,20 @@ export const AuthProvider = ({ children }: any) => {
         //Si no hay token se dispara el no autenticado
         if(!token) return dispatch({type:'notAuthenticated'})
 
-        //TODO:Si hay token verificar token. Usando la petición GET Renovar o Validar JWT
+        //Si hay token verificar token. Usando la petición GET Renovar o Validar JWT
+        //Si todo sale bien se ejecuta este dispatch
+        const resp= await cafeApi.get('/auth');
+            //Si la respuesta a ok 200
+        if (resp.status!== 200) {
+            return dispatch({type:'notAuthenticated'});
+        }
+        dispatch({
+            type: 'signUp',
+            payload: {
+                token: resp.data.token,
+                user: resp.data.usuario
+            }
+        })
     }
 
     const sigUp = () => { };
