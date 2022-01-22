@@ -92,7 +92,11 @@ export const AuthProvider = ({ children }: any) => {
             })
         }
     };
-    const logOut = () => { };
+    const logOut = async() => {
+        //Limpiar el async storage
+        await AsyncStorage.removeItem('token');
+        dispatch({type:'logout'})
+     };
     const removeError = () => {
 
         dispatch({ type: 'removeError' })
