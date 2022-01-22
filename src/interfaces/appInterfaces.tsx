@@ -3,6 +3,11 @@ export interface LoginData{
     correo:String;
     password:String;
 }
+export interface RegisterData{
+    nombre:String,
+    correo:String;
+    password:String;
+}
 
 
 export interface LoginResponse {

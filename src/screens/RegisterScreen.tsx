@@ -1,7 +1,8 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import React from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { WhiteLogo } from '../components/WhiteLogo';
+import { AuthContext } from '../context/AuthContext';
 
 import { useForm } from '../hooks/useForm';
 import { loginStyles } from '../theme/loginTheme';
@@ -11,17 +12,34 @@ interface Props extends StackScreenProps<any,any>{
 
 }
 export const RegisterScreen = ({navigation}:Props) => {
-
+    const {sigUp,removeError,errorMessage}=useContext(AuthContext)
     const {email,password,name,onChange}=useForm({
         email:'',
         password:'',
         name:''
       });
     
+      useEffect(() => {
+        if(errorMessage.length===0) return;
+      
+        Alert.alert('Registro incorrecto',errorMessage,[
+          {
+            text:'Ok',
+            onPress:()=>removeError()
+          },
+        ]);
+      }, [errorMessage]);
+     
+     
       const onRegister=()=>{
         console.log({email,password,name})
         //Para ocultar el teclado al hacer clic en login
         Keyboard.dismiss();
+        sigUp({
+          correo:email,
+          nombre:name,
+          password
+        })
       }
 
     return <>
