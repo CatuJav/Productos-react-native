@@ -56,6 +56,10 @@ export const AuthProvider = ({ children }: any) => {
         if (resp.status!== 200) {
             return dispatch({type:'notAuthenticated'});
         }
+        //Vuelve a guadar el un nuevo token revalidando la vigencia de caducidad ca vez que se llama a la peticion get
+        //Si solo comentamos esta linea se guarda el anterior token pero solo  tiene vigencia por 7 días y no se renueva
+        //await AsyncStorage.setItem('token', resp.data.token);
+
         dispatch({
             type: 'signUp',
             payload: {
