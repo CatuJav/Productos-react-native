@@ -1,8 +1,22 @@
-import React from 'react';
+import { StackScreenProps } from '@react-navigation/stack';
+import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
+import { ProductsStackParams } from '../navigator/ProductsNavigator';
 
-export const ProductScreen = () => {
+interface Props extends StackScreenProps<ProductsStackParams,'ProductScreen'>{};
+
+export const ProductScreen = ({navigation,route}:Props) => {
+
+  const {id,name=''}=route.params;
+
+  useEffect(() => {
+      navigation.setOptions({
+        title:name
+      })
+  }, []);
+  
+
   return <View>
-      <Text>Product Screen</Text>
+      <Text>{id} {name}</Text>
   </View>;
 };
