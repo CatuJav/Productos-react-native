@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, Button, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { ProductsStackParams } from '../navigator/ProductsNavigator';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -14,18 +14,18 @@ export const ProductScreen = ({ navigation, route }: Props) => {
   const { id, name = '' } = route.params;
 
   const { categories, isLoading } = useCategories();
-  const {loadProductById}=useContext(ProductsContext);
+  const { loadProductById } = useContext(ProductsContext);
 
   //Para usar un formulario
-  const{_id,nombre,categoriaId,img, form, onChange, setFormValue}=useForm({
-    _id:id,
-    categoriaId:'',
-    nombre:name,
-    img:''
+  const { _id, nombre, categoriaId, img, form, onChange, setFormValue } = useForm({
+    _id: id,
+    categoriaId: '',
+    nombre: name,
+    img: ''
   });
 
 
-  const [selectedLanguage, setSelectedLanguage] = useState();
+
 
   useEffect(() => {
     navigation.setOptions({
@@ -35,22 +35,21 @@ export const ProductScreen = ({ navigation, route }: Props) => {
 
 
   useEffect(() => {
-      loadProduct()
+    loadProduct()
   }, []);
-  
 
-  const loadProduct=async()=>{
-    if (id.length===0) {
+
+  const loadProduct = async () => {
+    if (id.length === 0) {
       return;
     }
-    const product=await loadProductById(id);
+    const product = await loadProductById(id);
     setFormValue({
-      _id:id,
-      categoriaId:product.categoria._id,
-      img:product.img||'',
-      nombre:product.nombre
+      _id: id,
+      categoriaId: product.categoria._id,
+      img: product.img || '',
+      nombre: product.nombre
     })
-    console.log(product)
   }
 
   return <View style={styles.container}>
@@ -59,21 +58,20 @@ export const ProductScreen = ({ navigation, route }: Props) => {
       <TextInput
         placeholder='Producto'
         style={styles.textInput}
-      //TODO: value, onChangeText
-        value={name}
-        onChangeText={(value)=>onChange(value,'nombre')}
+        //TODO: value, onChangeText
+        value={nombre}
+        onChangeText={(value) => onChange(value, 'nombre')}
       />
       {/*Picker / Selector*/}
       {
         isLoading ?
           (
-          <ActivityIndicator color='#5856D6' size={25} />
+            <ActivityIndicator color='#5856D6' size={25} />
           ) :
           (
             <Picker
-              selectedValue={selectedLanguage}
-              onValueChange={(itemValue, itemIndex) =>
-                setSelectedLanguage(itemValue)
+              selectedValue={categoriaId}
+              onValueChange={(itemValue) => { onChange(itemValue, 'categoriaId') }
               }>
               {categories.map(c => (
                 <Picker.Item label={c.nombre}
@@ -113,11 +111,25 @@ export const ProductScreen = ({ navigation, route }: Props) => {
           color="#5856d6"
         />
       </View>
-      <Text>
-        {JSON.stringify(form,null,5)}
-      </Text>
+      {
+        (img.length > 0) &&
+        <Image
+          source={{
+            uri: img
+          }}
+          style={{
+            marginTop:20,
+            width: '100%',
+            height: 300,
+            borderRadius:15
+          }}
+
+        />
+      }
+
+      {/* TODO: Mostrar imagen temporal */}
     </ScrollView>
-  </View>;
+  </View>
 };
 
 const styles = StyleSheet.create({
