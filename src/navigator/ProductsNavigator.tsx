@@ -5,7 +5,7 @@ import { ProductsScreen } from '../screens/ProductsScreen';
 
 export type ProductsStackParams = {
     ProductsScreen: undefined,
-    ProductScreen: { id?: string, name?: string }
+    ProductScreen: { id: string, name?: string }
 }
 
 const Stack = createStackNavigator<ProductsStackParams>();

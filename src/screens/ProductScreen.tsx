@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, Button, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { ProductsStackParams } from '../navigator/ProductsNavigator';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useCategories } from '../hooks/useCategories';
+import { useForm } from '../hooks/useForm';
+import { ProductsContext } from '../context/ProductsContext';
 
 interface Props extends StackScreenProps<ProductsStackParams, 'ProductScreen'> { };
 
@@ -12,6 +14,17 @@ export const ProductScreen = ({ navigation, route }: Props) => {
   const { id, name = '' } = route.params;
 
   const { categories, isLoading } = useCategories();
+  const {loadProductById}=useContext(ProductsContext);
+
+  //Para usar un formulario
+  const{_id,nombre,categoriaId,img, form, onChange, setFormValue}=useForm({
+    _id:id,
+    categoriaId:'',
+    nombre:name,
+    img:''
+  });
+
+
   const [selectedLanguage, setSelectedLanguage] = useState();
 
   useEffect(() => {
@@ -21,6 +34,25 @@ export const ProductScreen = ({ navigation, route }: Props) => {
   }, []);
 
 
+  useEffect(() => {
+      loadProduct()
+  }, []);
+  
+
+  const loadProduct=async()=>{
+    if (id.length===0) {
+      return;
+    }
+    const product=await loadProductById(id);
+    setFormValue({
+      _id:id,
+      categoriaId:product.categoria._id,
+      img:product.img||'',
+      nombre:product.nombre
+    })
+    console.log(product)
+  }
+
   return <View style={styles.container}>
     <ScrollView>
       <Text style={styles.label}>Nombre del producto</Text>
@@ -28,6 +60,8 @@ export const ProductScreen = ({ navigation, route }: Props) => {
         placeholder='Producto'
         style={styles.textInput}
       //TODO: value, onChangeText
+        value={name}
+        onChangeText={(value)=>onChange(value,'nombre')}
       />
       {/*Picker / Selector*/}
       {
@@ -79,7 +113,9 @@ export const ProductScreen = ({ navigation, route }: Props) => {
           color="#5856d6"
         />
       </View>
-
+      <Text>
+        {JSON.stringify(form,null,5)}
+      </Text>
     </ScrollView>
   </View>;
 };
