@@ -68,11 +68,11 @@ export const ProductProvider = ({ children }: any) => {
             type:data.assets![0].type,
             name:data.assets![0].fileName
         }
-        console.log({fileToUpload});
+       
         //Form data para subir en el api
         const formData = new FormData();
         formData.append('archivo',fileToUpload);
-        console.log(formData.getParts());
+        
 
         try{
         //TODO: Verificar que paso
@@ -82,7 +82,7 @@ export const ProductProvider = ({ children }: any) => {
         const resp = await cafeFetch(`uploads/productos/${ productoId }`, 'PUT', 'multipart/form-data', formData)
         .then(resp => resp.json());
         }catch(e:any){
-            console.log(e.response?.data?.msg);
+            console.log(e.response);
         }
     }
 
