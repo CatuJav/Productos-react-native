@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { ProductsStackParams } from '../navigator/ProductsNavigator';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -53,13 +53,14 @@ export const ProductScreen = ({ navigation, route }: Props) => {
   }
 
   //Saber si se debe actualizar o crear segun el lengt del id
-  const saveOrUpdate=()=>{
+  const saveOrUpdate=async()=>{
     if (id.length>0) {
       updateProduct(categoriaId,nombre,id);
     }else{
    
       const tempCategoriaId=categoriaId|| categories[0]._id
-      addProduct(tempCategoriaId,nombre);
+      const newProduct=await addProduct(tempCategoriaId,nombre);
+      onChange(newProduct._id,'_id');
     }
   }
 
@@ -102,13 +103,13 @@ export const ProductScreen = ({ navigation, route }: Props) => {
 
       <Button
 
-        title='Guardasr'
+        title='Guardar'
         onPress={() => saveOrUpdate()}
         color="#5856d6"
       />
 
       { 
-        (id.length>0)&&(
+        (_id.length>0)&&(
 
       <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
         <Button

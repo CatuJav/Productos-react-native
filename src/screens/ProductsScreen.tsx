@@ -20,8 +20,8 @@ export const ProductsScreen = ({navigation}:Props) => {
                         marginRight:10
                     }}
                     onPress={()=>navigation.navigate('ProductScreen',{
-                        id:undefined,
-                        name:'Nuevo Producto'
+                        id:'',
+                        name:''
                     })}
                 >
                     <Text>Agregar</Text>
