@@ -1,6 +1,9 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
 import { Picker } from '@react-native-picker/picker';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+
 import { ProductsStackParams } from '../navigator/ProductsNavigator';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useCategories } from '../hooks/useCategories';
@@ -12,6 +15,8 @@ interface Props extends StackScreenProps<ProductsStackParams, 'ProductScreen'> {
 export const ProductScreen = ({ navigation, route }: Props) => {
 
   const { id='', name = '' } = route.params;
+
+  const [temUri, setTemUri] = useState<string>('');
 
   const { categories, isLoading } = useCategories();
   const { loadProductById, addProduct,updateProduct} = useContext(ProductsContext);
@@ -64,6 +69,19 @@ export const ProductScreen = ({ navigation, route }: Props) => {
     }
   }
 
+  //Tomar fotos
+  const tomarFoto=()=>{
+    console.log('camera');
+    launchCamera({
+      mediaType:'photo',
+      quality:1
+    },(resp)=>{
+      if (resp.didCancel) return;
+      if(!resp.assets![0].uri) return;
+
+      setTemUri(resp.assets![0].uri);
+    });
+  }
   return <View style={styles.container}>
     <ScrollView>
       <Text style={styles.label}>Nombre del producto</Text>
@@ -115,7 +133,7 @@ export const ProductScreen = ({ navigation, route }: Props) => {
         <Button
 
           title='Cámara'
-          onPress={() => { }}
+          onPress={() => {tomarFoto() }}
           color="#5856d6"
         />
         <View style={{ width: 10 }}></View>
@@ -130,7 +148,7 @@ export const ProductScreen = ({ navigation, route }: Props) => {
 
       }
       {
-        (img.length > 0) &&
+        (img.length > 0 && !temUri) &&
         <Image
           source={{
             uri: img
@@ -146,6 +164,22 @@ export const ProductScreen = ({ navigation, route }: Props) => {
       }
 
       {/* TODO: Mostrar imagen temporal */}
+ 
+      {
+        (temUri.length>0) &&
+        <Image
+          source={{
+            uri: temUri
+          }}
+          style={{
+            marginTop:20,
+            width: '100%',
+            height: 300,
+            borderRadius:15
+          }}
+
+        />
+      }
     </ScrollView>
   </View>
 };
