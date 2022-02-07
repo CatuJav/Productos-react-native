@@ -1,7 +1,6 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useContext, useEffect } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import React, { useContext, useEffect, useState } from 'react';
+import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ProductsContext } from '../context/ProductsContext';
 import { ProductsStackParams } from '../navigator/ProductsNavigator';
 
@@ -9,6 +8,7 @@ interface Props extends StackScreenProps<ProductsStackParams,'ProductsScreen'>{}
 
 export const ProductsScreen = ({navigation}:Props) => {
 
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const { products, loadProducts}=useContext(ProductsContext)
 
     useEffect(() => {
@@ -32,11 +32,24 @@ export const ProductsScreen = ({navigation}:Props) => {
     
 
     //TODO: Pull to refresh
+    const loadProductsFromBackend=async()=>{
+        setIsRefreshing(true);
+        await loadProducts();
+        setIsRefreshing(false);
+    }
+
   return <View style={{
       flex:1,
       marginHorizontal:10
   }}>
       <FlatList
+        //Para el refresh
+        refreshControl={
+        <RefreshControl 
+            refreshing={isRefreshing}
+            onRefresh={loadProductsFromBackend}
+        />}
+
         data={products}
         keyExtractor={(p)=>p._id}
         renderItem={({item})=>(
