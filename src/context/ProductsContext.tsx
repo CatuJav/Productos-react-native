@@ -31,10 +31,12 @@ export const ProductProvider = ({ children }: any) => {
        
     }
     const addProduct =async (categoryId: string, productName: string) => {
-
+        console.log('addProuct');
+        console.log({categoryId,productName});
     }
     const updateProduct =async (categoryId: string, productName: string, productId: string) => {
-
+        console.log('updateProuct');
+        console.log({categoryId,productName,productId});
     }
     const deleteProduct = async(id: string) => {
 

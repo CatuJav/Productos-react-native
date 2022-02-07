@@ -11,10 +11,10 @@ interface Props extends StackScreenProps<ProductsStackParams, 'ProductScreen'> {
 
 export const ProductScreen = ({ navigation, route }: Props) => {
 
-  const { id, name = '' } = route.params;
+  const { id='', name = '' } = route.params;
 
   const { categories, isLoading } = useCategories();
-  const { loadProductById } = useContext(ProductsContext);
+  const { loadProductById, addProduct,updateProduct} = useContext(ProductsContext);
 
   //Para usar un formulario
   const { _id, nombre, categoriaId, img, form, onChange, setFormValue } = useForm({
@@ -29,9 +29,9 @@ export const ProductScreen = ({ navigation, route }: Props) => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: name
+      title: (nombre)?nombre:'Sin nombre del producto'
     })
-  }, []);
+  }, [nombre]);
 
 
   useEffect(() => {
@@ -50,6 +50,17 @@ export const ProductScreen = ({ navigation, route }: Props) => {
       img: product.img || '',
       nombre: product.nombre
     })
+  }
+
+  //Saber si se debe actualizar o crear segun el lengt del id
+  const saveOrUpdate=()=>{
+    if (id.length>0) {
+      updateProduct(categoriaId,nombre,id);
+    }else{
+   
+      const tempCategoriaId=categoriaId|| categories[0]._id
+      addProduct(tempCategoriaId,nombre);
+    }
   }
 
   return <View style={styles.container}>
@@ -91,10 +102,13 @@ export const ProductScreen = ({ navigation, route }: Props) => {
 
       <Button
 
-        title='Guardar'
-        onPress={() => { }}
+        title='Guardasr'
+        onPress={() => saveOrUpdate()}
         color="#5856d6"
       />
+
+      { 
+        (id.length>0)&&(
 
       <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
         <Button
@@ -111,6 +125,9 @@ export const ProductScreen = ({ navigation, route }: Props) => {
           color="#5856d6"
         />
       </View>
+        )
+
+      }
       {
         (img.length > 0) &&
         <Image
