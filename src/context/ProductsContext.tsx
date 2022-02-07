@@ -1,6 +1,7 @@
 import  React, { useEffect } from 'react';
 import { createContext, useState } from "react";
-import cafeApi from '../api/cafeApi';
+import { ImagePickerResponse } from 'react-native-image-picker';
+import cafeApi, { cafeFetch } from '../api/cafeApi';
 import { Producto, ProductsResponse } from "../interfaces/appInterfaces";
 
 type ProductsContextProps = {
@@ -60,9 +61,29 @@ export const ProductProvider = ({ children }: any) => {
        return resp.data;
     }
 
-    //TODO: Cambiar el any
-    const uploadImage =async (data: any, id: string) => {
+    //TODO: Cambiar el any por ImagePickerResponse
+    const uploadImage =async (data: ImagePickerResponse, productoId: string) => {
+        const fileToUpload={
+            uri:data.assets![0].uri,
+            type:data.assets![0].type,
+            name:data.assets![0].fileName
+        }
+        console.log({fileToUpload});
+        //Form data para subir en el api
+        const formData = new FormData();
+        formData.append('archivo',fileToUpload);
+        console.log(formData.getParts());
 
+        try{
+        //TODO: Verificar que paso
+        // const resp = await cafeApi.put(`/uploads/productos/${productoId}`,formData);
+        // console.log({resp});
+
+        const resp = await cafeFetch(`uploads/productos/${ productoId }`, 'PUT', 'multipart/form-data', formData)
+        .then(resp => resp.json());
+        }catch(e:any){
+            console.log(e.response?.data?.msg);
+        }
     }
 
 

@@ -19,7 +19,7 @@ export const ProductScreen = ({ navigation, route }: Props) => {
   const [temUri, setTemUri] = useState<string>('');
 
   const { categories, isLoading } = useCategories();
-  const { loadProductById, addProduct,updateProduct} = useContext(ProductsContext);
+  const { loadProductById, addProduct,updateProduct, uploadImage} = useContext(ProductsContext);
 
   //Para usar un formulario
   const { _id, nombre, categoriaId, img, form, onChange, setFormValue } = useForm({
@@ -71,7 +71,7 @@ export const ProductScreen = ({ navigation, route }: Props) => {
 
   //Tomar fotos
   const tomarFoto=()=>{
-    console.log('camera');
+    
     launchCamera({
       mediaType:'photo',
       quality:1
@@ -80,6 +80,7 @@ export const ProductScreen = ({ navigation, route }: Props) => {
       if(!resp.assets![0].uri) return;
 
       setTemUri(resp.assets![0].uri);
+      uploadImage(resp,_id);
     });
   }
   return <View style={styles.container}>
